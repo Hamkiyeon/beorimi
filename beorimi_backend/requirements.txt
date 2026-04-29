@@ -4,5 +4,3 @@ python-multipart==0.0.22
 transformers==4.57.6
 pillow
 aiofiles
-python-dotenv
-supabase

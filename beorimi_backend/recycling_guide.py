@@ -1,53 +1,64 @@
-from database import supabase
+GUIDE_DATA = {
+    "paper": {
+        "title": "종이류",
+        "guide_text": "테이프, 스프링 등 다른 재질의 이물질은 제거 후 배출해주세요.\n영수증, 전표, 코팅지, 오염된 종이, 벽지, 부직포 등은 종이류가 아니니 종량제 봉투에 버려주세요.",
+    },
+    "paper_pack": {
+        "title": "종이팩",
+        "guide_text": "내용물을 완전히 비우고 깨끗이 씻어주세요.\n종이팩은 모아서 지정된 전용 수거함에 배출하는 것을 권장합니다.",
+    },
+    "paper_cup": {
+        "title": "종이컵",
+        "guide_text": "종이컵은 컵 안쪽에 비닐막이 코팅되어 있어 종이팩으로 분류됩니다.\n내용물을 완전히 비우고 깨끗이 씻어주세요.\n종이컵을 모아서 종이팩 수거함에 배출하는 것을 권장합니다.\n그렇지 못한 경우 일반 쓰레기로 취급해 주세요.",
+    },
+    "can": {
+        "title": "캔류",
+        "guide_text": "플라스틱 뚜껑 등 다른 재질 부분은 제거해 주세요.\n내용물을 비우고 물로 헹군 후, 찌그러뜨립니다.\n부탄가스 등은 구멍을 뚫어 내용물을 비워주세요.\n같은 캔이라도 알루미늄과 철을 구분해서 배출해 주세요.",
+    },
+    "glass": {
+        "title": "유리류",
+        "guide_text": "먼저 깨진 유리는 재활용이 안됩니다.\n깨진 유리는 신문지에 싸서 일반 종량제봉투로 배출해 주세요.\n일반 유리 제품은 내용물을 비우고 물로 헹군 후 뚜껑을 분리하여 배출합니다.\n내열유리(전자레인지용, 가스레인지용)는 일반 유리와 성분이 달라 재활용이 아닌 종량제 봉투에 담아 배출해 주세요.",
+    },
+    "pet": {
+        "title": "페트병",
+        "guide_text": "생수 및 음료 이외의 투명페트병, 페트용기류, 유색페트병은 플라스틱으로 배출해 주세요.\n생수 및 음료 투명페트병만 내용물을 비우고 헹군 뒤 라벨지를 제거합니다.\n찌그려 뜨려 투명페트병 전용수거함에 배출해 주세요.",
+    },
+    "plastic": {
+        "title": "플라스틱류",
+        "guide_text": "내용물을 깨끗이 비우고 라벨지 또는 접착스티커 등을 제거한 후 가능한 압착 하여 배출합니다.\n이물질이 묻어있거나 심하게 훼손된 경우 재활용이 불가능하므로 일반쓰레기로 배출해 주세요.",
+    },
+    "vinyl": {
+        "title": "비닐류",
+        "guide_text": "비닐은 종류와 색상 관계없이 분리배출 대상입니다.\n단, 랩과 테이프는 일반 쓰레기입니다.\n내용물을 비우고 물로 헹구는 등 이물질을 제거 후 배출해 주세요.\n이물질 제거가 어려운 경우에는 종량제 봉투로 배출해 주세요.",
+    },
+    "styrofoam": {
+        "title": "스티로폼",
+        "guide_text": "내용물을 모두 비우고, 이물질은 물로 깨끗이 세척한 후 배출해 주세요.\n이물질이 완전히 제거 안되면 일반쓰레기입니다.\n무늬와 색상, 비닐 코팅된 경우와 과일 개별 포장에 쓰이는 스티로폼은 일반쓰레기로 버려주세요.",
+    },
+    "battery": {
+        "title": "건전지",
+        "guide_text": "충격이나 수분 노출 시 화재의 위험이 있으므로 건전지의 양극, 음극 부분을 절연테이프나 비닐테이프로 감싸 배출해 주세요.\n전용수거함이 없는 경우 따로 봉투에 넣어 배출하시면 됩니다.",
+    },
+}
 
 
 def get_recycling_info(class_name: str, is_dirty: bool) -> dict | None:
-    """
-    guide_rules 테이블에서 class_name에 해당하는 분리배출 정보를 조회합니다.
-    알 수 없는 class_name이면 None을 반환합니다.
-    """
-    response = (
-        supabase
-        .table("guide_rules")
-        .select("*")
-        .eq("class_name", class_name)
-        .execute()
-    )
-
-    if not response.data:
+    guide = GUIDE_DATA.get(class_name)
+    if not guide:
         return None
 
-    guide = response.data[0]
-
-    result = {
-        "class_name": guide["class_name"],
+    return {
+        "class_name": class_name,
         "korean_name": guide["title"],
         "bin_color": "분리수거함 확인 필요",
         "disposal_steps": [guide["guide_text"]],
         "notes": guide["guide_text"],
         "dirty_warning": "오염된 경우 세척 후 배출하거나 일반쓰레기로 처리해야 할 수 있습니다." if is_dirty else None,
     }
-    return result
 
 
 def get_all_categories() -> list[dict]:
-    """
-    guide_rules 테이블의 전체 분류 목록을 반환합니다.
-    """
-    response = (
-        supabase
-        .table("guide_rules")
-        .select("class_name, title")
-        .execute()
-    )
-
-    if not response.data:
-        return []
-
     return [
-        {
-            "class_name": item["class_name"],
-            "korean_name": item["title"]
-        }
-        for item in response.data
+        {"class_name": k, "korean_name": v["title"]}
+        for k, v in GUIDE_DATA.items()
     ]
