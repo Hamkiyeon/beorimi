@@ -1,0 +1,28 @@
+
+설치해야 할 라이브러리 목록
+파이썬 환경에 transformers, torch, Pillow 패키지를 설치해야 합니다!
+
+my_permanent_model 이 폴더 압축 풀었을 때 위치
+beorimi_backend > my_permanent_model
+
+백엔드 환경 활성화 후 (venv) ~~~ 로 터미널이 생김 그때
+pip install supabase
+pip install python-dotenv supabase
+pip install torchvision
+
+얘네 한줄씩 해서 설치
+
+실행방법
+
+터미널 2개 열고
+1 백엔드 서버 열기
+cd beorimi_backend
+.\venv\Scripts\Activate.ps1      <- (백엔드 환경 활성화)
+uvicorn main:app --reload       
+
+2 프론트 실행
+cd beorimi
+npm run dev
+
+
+

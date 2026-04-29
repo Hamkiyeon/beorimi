@@ -1,0 +1,7 @@
+venv/
+__pycache__/
+*.pyc
+uploads/
+my_permanent_model/
+my_permanent_model.zip
+.env
