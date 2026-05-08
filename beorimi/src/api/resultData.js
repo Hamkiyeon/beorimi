@@ -47,7 +47,6 @@ export async function getResultData() {
     .in("class_name", classNames);
 
   if (error) {
-    console.error("Supabase 에러:", error);
     throw new Error("가이드 정보를 불러오지 못했습니다.");
   }
 
