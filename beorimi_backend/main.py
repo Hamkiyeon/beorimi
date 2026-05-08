@@ -4,7 +4,6 @@ import os
 import uuid
 
 from ai_model import analyze_waste_image
-from recycling_guide import get_recycling_info
 
 app = FastAPI()
 
@@ -73,27 +72,9 @@ def analyze():
     try:
         ai_result = analyze_waste_image(LAST_UPLOADED_IMAGE)
 
-        detected_waste = ai_result.get("detected_waste", [])
-        is_dirty = ai_result.get("is_dirty", False)
-
-        results = []
-        unknown_items = []
-
-        for item in detected_waste:
-            class_name = item.get("class_name")
-            if not class_name:
-                continue
-
-            guide = get_recycling_info(class_name, is_dirty)
-            if guide is None:
-                unknown_items.append(class_name)
-            else:
-                results.append(guide)
-
         return {
-            "results": results,
-            "unknown_items": unknown_items,
-            "is_dirty": is_dirty
+            "detected_waste": ai_result.get("detected_waste", []),
+            "is_dirty": ai_result.get("is_dirty", False),
         }
 
     except Exception as e:
