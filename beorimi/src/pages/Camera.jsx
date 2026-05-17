@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import { uploadImage } from "../api/resultData";
 
 export default function Camera() {
   const videoRef = useRef(null);
@@ -33,7 +34,7 @@ export default function Camera() {
     };
   }, []);
 
-  const handleCapture = () => {
+  const handleCapture = async () => {
     const video = videoRef.current;
     const canvas = canvasRef.current;
 
@@ -54,10 +55,16 @@ export default function Camera() {
     try {
       localStorage.setItem("capturedImage", imageData);
       localStorage.removeItem("uploadedImage");
+
+      const blob = await (await fetch(imageData)).blob();
+      const file = new File([blob], "captured-image.jpg", { type: "image/jpeg" });
+
+      await uploadImage(file);
+
       navigate("/result");
     } catch (error) {
-      console.error("캡처 이미지 저장 오류:", error);
-      alert("촬영 이미지 저장에 실패했습니다.");
+      console.error("촬영 이미지 업로드 오류:", error);
+      alert("촬영 이미지 업로드에 실패했습니다.");
     }
   };
 

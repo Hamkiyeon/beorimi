@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getResultData } from "../api/resultData";
 
@@ -10,8 +10,12 @@ export default function Result() {
   const [isDirty, setIsDirty] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
+  const hasFetched = useRef(false);
 
   useEffect(() => {
+    if (hasFetched.current) return;
+    hasFetched.current = true;
+
     const capturedImage = localStorage.getItem("capturedImage");
     const uploadedImage = localStorage.getItem("uploadedImage");
 
@@ -97,31 +101,6 @@ export default function Result() {
           </div>
         ) : (
           <div className="result-box">
-            {resultList.length > 0 && (
-              <div
-                className="dirty-check-box"
-                style={{
-                  padding: "15px",
-                  borderRadius: "8px",
-                  background: isDirty ? "#ffebee" : "#e8f5e9",
-                }}
-              >
-                {isDirty ? (
-                  <p style={{ color: "#c62828", margin: 0 }}>
-                    ⚠️ <strong>오염물질 감지됨!</strong>
-                    <br />
-                    내용물을 비우고 물로 헹군 뒤 분리배출해 주세요.
-                  </p>
-                ) : (
-                  <p style={{ color: "#2e7d32", margin: 0 }}>
-                    ✅ <strong>분석 결과가 도착했습니다!</strong>
-                    <br />
-                    아래 품목별 안내를 확인해 주세요.
-                  </p>
-                )}
-              </div>
-            )}
-
             {resultList.length > 0 ? (
               resultList.map((item, index) => (
                 <div key={index} className="result-card">
@@ -150,6 +129,31 @@ export default function Result() {
               <div className="unknown-box">
                 <strong>인식 불가 항목:</strong> {unknownItems.join(", ")}
                 <p>해당 항목은 아직 지원되지 않거나 일반쓰레기로 배출해주세요.</p>
+              </div>
+            )}
+
+            {resultList.length > 0 && (
+              <div
+                className="dirty-check-box"
+                style={{
+                  padding: "15px",
+                  borderRadius: "8px",
+                  background: isDirty ? "#ffebee" : "#e8f5e9",
+                }}
+              >
+                {isDirty ? (
+                  <p style={{ color: "#c62828", margin: 0 }}>
+                    ⚠️ <strong>오염물질 감지됨!</strong>
+                    <br />
+                    내용물을 비우고 물로 헹군 뒤 분리배출해 주세요.
+                  </p>
+                ) : (
+                  <p style={{ color: "#2e7d32", margin: 0 }}>
+                    ✅ <strong>분석 결과가 도착했습니다!</strong>
+                    <br />
+                    아래 품목별 안내를 확인해 주세요.
+                  </p>
+                )}
               </div>
             )}
           </div>

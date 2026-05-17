@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { uploadImage } from "../api/resultData";
+import { uploadImage, getTodayStats } from "../api/resultData";
 
 export default function Home() {
   const navigate = useNavigate();
@@ -11,20 +11,27 @@ export default function Home() {
   const [statsMessage, setStatsMessage] = useState("오늘도 분리배출을 시작해볼까요? 🌱");
 
   useEffect(() => {
-    const savedCount = localStorage.getItem("todayCount");
-    const savedItem = localStorage.getItem("recentItem");
+    async function fetchStats() {
+      try {
+        const data = await getTodayStats();
 
-    if (savedCount) {
-      setTodayCount(Number(savedCount));
+        setTodayCount(data.today_count || 0);
+        setRecentItem(data.recent_item || "없음");
+
+        if ((data.today_count || 0) > 0) {
+          setStatsMessage("오늘도 지구를 위한 실천을 이어가고 있어요 🌿");
+        } else {
+          setStatsMessage("오늘도 분리배출을 시작해볼까요? 🌱");
+        }
+      } catch (error) {
+        console.error("통계 불러오기 실패:", error);
+        setTodayCount(0);
+        setRecentItem("없음");
+        setStatsMessage("오늘도 분리배출을 시작해볼까요? 🌱");
+      }
     }
 
-    if (savedItem) {
-      setRecentItem(savedItem);
-    }
-
-    if (savedCount && Number(savedCount) > 0) {
-      setStatsMessage("오늘도 지구를 위한 실천을 이어가고 있어요 🌿");
-    }
+    fetchStats();
   }, []);
 
   const handleCameraClick = () => {
