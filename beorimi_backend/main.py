@@ -135,24 +135,23 @@ def analyze():
 
 @app.get("/stats/today")
 def get_today_stats():
-    today = datetime.now().date()
-    start_of_day = datetime.combine(today, datetime.min.time()).isoformat()
+    try:
+        today = datetime.now().date()
+        start_of_day = datetime.combine(today, datetime.min.time()).isoformat()
 
-    response = (
-        supabase
-        .table("detections")
-        .select("*")
-        .gte("created_at", start_of_day)
-        .execute()
-    )
+        response = (
+            supabase.table("detections")
+            .select("*")
+            .gte("created_at", start_of_day)
+            .execute()
+        )
 
-    data = response.data if response.data else []
-
-    today_count = len(data)
-    recent_item = "없음"
-
-    if today_count > 0:
-        recent_item = data[-1]["class_name"]
+        data = response.data if response.data else []
+        today_count = len(data)
+        recent_item = data[-1]["class_name"] if today_count > 0 else "없음"
+    except Exception:
+        today_count = 0
+        recent_item = "없음"
 
     return {
         "today_count": today_count,
