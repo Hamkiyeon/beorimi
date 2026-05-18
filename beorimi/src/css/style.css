@@ -843,6 +843,118 @@ body:has(.result-page) main {
   line-height: 1.5;
 }
 
+/* ===== 환경 한줄 메시지 ===== */
+.eco-message {
+  width: 100%;
+  max-width: 500px;
+  background: linear-gradient(135deg, #e8f5e9, #f0faf0);
+  border-radius: 14px;
+  padding: 14px 20px;
+  text-align: center;
+  border: 1px solid #c8e6c9;
+}
+
+.eco-message p {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #2e7d32;
+  line-height: 1.5;
+}
+
+/* ===== 오늘의 팁 ===== */
+.tip-section {
+  width: 100%;
+  max-width: 500px;
+}
+
+.tip-label {
+  margin: 0 0 10px 2px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #388e3c;
+}
+
+.tip-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: #fff;
+  border-radius: 14px;
+  padding: 16px 18px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  border: 1px solid #e8f5e9;
+}
+
+.tip-icon {
+  font-size: 36px;
+  flex-shrink: 0;
+}
+
+.tip-text {
+  margin: 0;
+  font-size: 14px;
+  color: #333;
+  line-height: 1.6;
+}
+
+/* ===== 자원 인포그래픽 ===== */
+.eco-facts-section {
+  width: 100%;
+  max-width: 500px;
+}
+
+.eco-facts-label {
+  margin: 0 0 10px 2px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #388e3c;
+}
+
+.eco-facts-scroll {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding-bottom: 6px;
+  scrollbar-width: none;
+}
+
+.eco-facts-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.eco-fact-card {
+  flex-shrink: 0;
+  width: 110px;
+  background: #fff;
+  border-radius: 14px;
+  padding: 16px 10px;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  border: 1px solid #e8f5e9;
+}
+
+.eco-fact-icon {
+  font-size: 28px;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.eco-fact-item {
+  margin: 0 0 4px 0;
+  font-size: 11px;
+  color: #888;
+  line-height: 1.4;
+}
+
+.eco-fact-effect {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 700;
+  color: #2e7d32;
+  line-height: 1.4;
+}
+
 /* ===== 뉴스 / 영상 섹션 ===== */
 .media-section {
   width: 100%;
