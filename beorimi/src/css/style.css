@@ -131,8 +131,9 @@ main {
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
-  padding: 48px 20px 60px;
+  padding: 36px 20px 60px;
   min-height: calc(100vh - 73px);
+  gap: 24px;
 }
 
 /* ===== 홈 ===== */
@@ -258,6 +259,7 @@ main {
 /* ===== 카메라 페이지 ===== */
 body:has(.camera-page) main {
   padding: 0;
+  gap: 0;
   min-height: calc(100vh - 73px);
   align-items: stretch;
   justify-content: center;
@@ -315,6 +317,7 @@ body:has(.camera-page) main {
 /* ===== 결과 페이지 ===== */
 body:has(.result-page) main {
   padding: 24px 20px 40px;
+  gap: 18px;
   min-height: calc(100vh - 73px);
   align-items: stretch;
 }
@@ -959,7 +962,6 @@ body:has(.result-page) main {
 .media-section {
   width: 100%;
   max-width: 500px;
-  margin-top: 32px;
 }
 
 .media-tabs {
