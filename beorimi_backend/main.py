@@ -58,7 +58,6 @@ async def upload_image(file: UploadFile = File(...)):
     LAST_UPLOADED_IMAGE = file_path
     LAST_UPLOAD_ID = upload_id
 
-    print(f"[upload-image] upload_id={upload_id}, saved_path={file_path}")
 
     return {
         "upload_id": upload_id,
@@ -74,10 +73,6 @@ async def upload_image(file: UploadFile = File(...)):
 def analyze():
     global LAST_UPLOADED_IMAGE, LAST_UPLOAD_ID
 
-    print("[analyze] called")
-    print("[analyze] LAST_UPLOADED_IMAGE =", LAST_UPLOADED_IMAGE)
-    print("[analyze] LAST_UPLOAD_ID =", LAST_UPLOAD_ID)
-
     if not LAST_UPLOADED_IMAGE:
         raise HTTPException(status_code=400, detail="먼저 이미지를 업로드해주세요.")
 
@@ -86,8 +81,6 @@ def analyze():
 
     try:
         ai_result = analyze_waste_image(LAST_UPLOADED_IMAGE)
-        print("[analyze] ai_result =", ai_result)
-
         detected_waste = ai_result.get("detected_waste", [])
         is_dirty = ai_result.get("is_dirty", False)
 
@@ -96,18 +89,12 @@ def analyze():
 
         for item in detected_waste:
             class_name = item.get("class_name")
-            print("[analyze] class_name =", class_name)
-
             if not class_name:
                 continue
 
-            # 1) 가이드 조회
             try:
                 guide = get_recycling_info(class_name, is_dirty)
-                print("[analyze] guide =", guide)
-            except Exception as guide_error:
-                print("[analyze] get_recycling_info error =", repr(guide_error))
-                traceback.print_exc()
+            except Exception:
                 guide = None
 
             if guide is None:
@@ -115,33 +102,21 @@ def analyze():
             else:
                 results.append(guide)
 
-            # 2) 통계 저장
             try:
                 existing = (
-                    supabase
-                    .table("detections")
+                    supabase.table("detections")
                     .select("id")
                     .eq("upload_id", LAST_UPLOAD_ID)
                     .eq("class_name", class_name)
                     .execute()
                 )
-                print("[analyze] existing =", existing.data)
-
                 if not existing.data:
-                    insert_result = (
-                        supabase
-                        .table("detections")
-                        .insert({
-                            "upload_id": LAST_UPLOAD_ID,
-                            "class_name": class_name
-                        })
-                        .execute()
-                    )
-                    print("[analyze] insert_result =", insert_result.data)
-
-            except Exception as insert_error:
-                print("[analyze] detections 저장 오류 무시 =", repr(insert_error))
-                traceback.print_exc()
+                    supabase.table("detections").insert({
+                        "upload_id": LAST_UPLOAD_ID,
+                        "class_name": class_name
+                    }).execute()
+            except Exception:
+                pass
 
         response_data = {
             "results": results,
