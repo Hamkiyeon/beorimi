@@ -3,10 +3,9 @@ import { useNavigate } from "react-router-dom";
 import { uploadImage, getTodayStats } from "../api/resultData";
 
 const YOUTUBE_VIDEOS = [
-  { id: "lNMxKPDpWEw", title: "분리배출 이렇게 하세요! 한눈에 보는 분리수거 방법" },
-  { id: "RwCEYGcMkSw", title: "재활용 쓰레기, 제대로 버리는 법" },
-  { id: "Gl1tZ5wiEvg", title: "올바른 분리배출 가이드 (환경부)" },
-  { id: "GKFDEEQMYmc", title: "음식물 쓰레기 올바른 배출 방법" },
+  { id: "o0CbvjoLd8U", title: "분리배출 이렇게 하세요! 한눈에 보는 분리수거 방법" },
+  { id: "5vQlboNwC4s", title: "재활용 쓰레기, 제대로 버리는 법" },
+  { id: "9m4gnPozJVM", title: "올바른 분리배출 가이드 (환경부)" },
 ];
 
 export default function Home() {
