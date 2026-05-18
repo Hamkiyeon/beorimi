@@ -38,27 +38,10 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    const rssUrl = "https://news.google.com/rss/search?q=%EB%B6%84%EB%A6%AC%EC%88%98%EA%B1%B0+%EC%9E%AC%ED%99%9C%EC%9A%A9&hl=ko&gl=KR&ceid=KR:ko";
-    const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(rssUrl)}`;
-
-    fetch(proxyUrl)
+    const BASE_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
+    fetch(`${BASE_URL}/news`)
       .then((r) => r.json())
-      .then((data) => {
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(data.contents, "text/xml");
-        const items = Array.from(doc.querySelectorAll("item"))
-          .slice(0, 6)
-          .map((item) => {
-            const title = item.querySelector("title")?.textContent?.replace(/ - [^-]*$/, "").trim() || "";
-            const guid = item.querySelector("guid")?.textContent?.trim() || "";
-            const link = guid.startsWith("http") ? guid : (item.querySelector("link")?.textContent?.trim() || "");
-            const pubDate = item.querySelector("pubDate")?.textContent || "";
-            const source = item.querySelector("source")?.textContent?.trim() || "";
-            return { title, link, pubDate, source };
-          })
-          .filter((item) => item.title && item.link);
-        setNews(items);
-      })
+      .then((data) => setNews(data.items || []))
       .catch(() => {})
       .finally(() => setNewsLoading(false));
   }, []);

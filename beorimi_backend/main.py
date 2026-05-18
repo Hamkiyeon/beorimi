@@ -4,6 +4,8 @@ import os
 import uuid
 from datetime import datetime
 import traceback
+import httpx
+import xml.etree.ElementTree as ET
 
 from ai_model import analyze_waste_image
 from recycling_guide import get_recycling_info
@@ -33,6 +35,30 @@ def root():
 @app.get("/health")
 def health_check():
     return {"status": "ok"}
+
+
+@app.get("/news")
+async def get_news():
+    try:
+        url = "https://news.google.com/rss/search?q=%EB%B6%84%EB%A6%AC%EC%88%98%EA%B1%B0+%EC%9E%AC%ED%99%9C%EC%9A%A9&hl=ko&gl=KR&ceid=KR:ko"
+        async with httpx.AsyncClient(timeout=10) as client:
+            response = await client.get(url)
+            response.raise_for_status()
+
+        root_el = ET.fromstring(response.text)
+        items = []
+        for item in root_el.findall(".//item")[:6]:
+            title = item.findtext("title", "").rsplit(" - ", 1)[0].strip()
+            link = item.findtext("guid", "") or item.findtext("link", "")
+            pub_date = item.findtext("pubDate", "")
+            source_el = item.find("source")
+            source = source_el.text.strip() if source_el is not None else ""
+            if title and link:
+                items.append({"title": title, "link": link, "pubDate": pub_date, "source": source})
+
+        return {"items": items}
+    except Exception:
+        return {"items": []}
 
 
 @app.post("/upload-image")
