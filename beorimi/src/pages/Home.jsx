@@ -2,11 +2,11 @@ import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { uploadImage, getTodayStats } from "../api/resultData";
 
-const YOUTUBE_CARDS = [
-  { icon: "♻️", label: "분리수거 방법", query: "분리수거 방법" },
-  { icon: "🧴", label: "플라스틱 배출", query: "플라스틱 분리배출 방법" },
-  { icon: "🍱", label: "음식물 쓰레기", query: "음식물 쓰레기 올바른 배출" },
-  { icon: "🌍", label: "재활용 캠페인", query: "재활용 환경 캠페인" },
+const YOUTUBE_VIDEOS = [
+  { id: "lNMxKPDpWEw", title: "분리배출 이렇게 하세요! 한눈에 보는 분리수거 방법" },
+  { id: "RwCEYGcMkSw", title: "재활용 쓰레기, 제대로 버리는 법" },
+  { id: "Gl1tZ5wiEvg", title: "올바른 분리배출 가이드 (환경부)" },
+  { id: "GKFDEEQMYmc", title: "음식물 쓰레기 올바른 배출 방법" },
 ];
 
 export default function Home() {
@@ -156,18 +156,20 @@ export default function Home() {
 
         {activeTab === "youtube" && (
           <div className="media-content">
-            <div className="youtube-grid">
-              {YOUTUBE_CARDS.map((item, i) => (
-                <a
-                  key={i}
-                  href={`https://www.youtube.com/results?search_query=${encodeURIComponent(item.query)}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="youtube-card"
-                >
-                  <span className="youtube-icon">{item.icon}</span>
-                  <span className="youtube-label">{item.label}</span>
-                </a>
+            <div className="youtube-list">
+              {YOUTUBE_VIDEOS.map((video, i) => (
+                <div key={i} className="youtube-embed-card">
+                  <div className="youtube-iframe-wrap">
+                    <iframe
+                      src={`https://www.youtube-nocookie.com/embed/${video.id}`}
+                      title={video.title}
+                      frameBorder="0"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                    />
+                  </div>
+                  <p className="youtube-embed-title">{video.title}</p>
+                </div>
               ))}
             </div>
           </div>

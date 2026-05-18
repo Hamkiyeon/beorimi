@@ -927,44 +927,42 @@ body:has(.result-page) main {
   color: #888;
 }
 
-/* 유튜브 카드 */
-.youtube-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
-}
-
-.youtube-card {
+/* 유튜브 임베드 */
+.youtube-list {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  padding: 24px 12px;
+  gap: 16px;
+}
+
+.youtube-embed-card {
   background: #fff;
   border-radius: 14px;
+  overflow: hidden;
   box-shadow: 0 2px 8px rgba(0,0,0,0.06);
   border: 1px solid #e8f5e9;
-  text-decoration: none;
-  color: inherit;
-  transition: box-shadow 0.2s, transform 0.15s;
 }
 
-.youtube-card:hover {
-  box-shadow: 0 4px 14px rgba(0,0,0,0.10);
-  transform: translateY(-2px);
+.youtube-iframe-wrap {
+  position: relative;
+  width: 100%;
+  padding-top: 56.25%;
 }
 
-.youtube-icon {
-  font-size: 36px;
-  line-height: 1;
+.youtube-iframe-wrap iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
 }
 
-.youtube-label {
+.youtube-embed-title {
+  margin: 0;
+  padding: 12px 14px;
   font-size: 13px;
   font-weight: 600;
-  color: #2e7d32;
-  text-align: center;
+  color: #1b5e20;
+  line-height: 1.4;
 }
 
 /* ===== 반응형 ===== */
