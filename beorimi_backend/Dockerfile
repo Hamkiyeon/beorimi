@@ -10,8 +10,11 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-# 모델 압축 해제
-RUN python -c "import zipfile; zipfile.ZipFile('my_permanent_model.zip').extractall('.')"
+# HuggingFace Model Hub에서 모델 다운로드
+RUN python -c "\
+from huggingface_hub import snapshot_download; \
+snapshot_download(repo_id='luculentus/beorimi-waste-classifier', repo_type='model', local_dir='./my_permanent_model'); \
+print('Model downloaded successfully')"
 
 EXPOSE 7860
 
