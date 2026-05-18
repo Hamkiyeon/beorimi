@@ -38,13 +38,26 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    const rssUrl = encodeURIComponent(
-      "https://news.google.com/rss/search?q=분리수거+재활용&hl=ko&gl=KR&ceid=KR:ko"
-    );
-    fetch(`https://api.rss2json.com/v1/api.json?rss_url=${rssUrl}&count=6`)
+    const rssUrl = "https://news.google.com/rss/search?q=%EB%B6%84%EB%A6%AC%EC%88%98%EA%B1%B0+%EC%9E%AC%ED%99%9C%EC%9A%A9&hl=ko&gl=KR&ceid=KR:ko";
+    const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(rssUrl)}`;
+
+    fetch(proxyUrl)
       .then((r) => r.json())
       .then((data) => {
-        if (data.status === "ok") setNews(data.items.slice(0, 6));
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(data.contents, "text/xml");
+        const items = Array.from(doc.querySelectorAll("item"))
+          .slice(0, 6)
+          .map((item) => {
+            const title = item.querySelector("title")?.textContent?.replace(/ - [^-]*$/, "").trim() || "";
+            const guid = item.querySelector("guid")?.textContent?.trim() || "";
+            const link = guid.startsWith("http") ? guid : (item.querySelector("link")?.textContent?.trim() || "");
+            const pubDate = item.querySelector("pubDate")?.textContent || "";
+            const source = item.querySelector("source")?.textContent?.trim() || "";
+            return { title, link, pubDate, source };
+          })
+          .filter((item) => item.title && item.link);
+        setNews(items);
       })
       .catch(() => {})
       .finally(() => setNewsLoading(false));
@@ -141,8 +154,7 @@ export default function Home() {
                   >
                     <p className="news-headline">{item.title}</p>
                     <span className="news-meta">
-                      {item.author || "뉴스"} ·{" "}
-                      {new Date(item.pubDate).toLocaleDateString("ko-KR")}
+                      {item.source || "뉴스"}{item.pubDate ? " · " + new Date(item.pubDate).toLocaleDateString("ko-KR") : ""}
                     </span>
                   </a>
                 ))}
