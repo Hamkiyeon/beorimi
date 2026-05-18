@@ -2,6 +2,13 @@ import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { uploadImage, getTodayStats } from "../api/resultData";
 
+const YOUTUBE_CARDS = [
+  { icon: "♻️", label: "분리수거 방법", query: "분리수거 방법" },
+  { icon: "🧴", label: "플라스틱 배출", query: "플라스틱 분리배출 방법" },
+  { icon: "🍱", label: "음식물 쓰레기", query: "음식물 쓰레기 올바른 배출" },
+  { icon: "🌍", label: "재활용 캠페인", query: "재활용 환경 캠페인" },
+];
+
 export default function Home() {
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
@@ -9,67 +16,57 @@ export default function Home() {
   const [todayCount, setTodayCount] = useState(0);
   const [recentItem, setRecentItem] = useState("없음");
   const [statsMessage, setStatsMessage] = useState("오늘도 분리배출을 시작해볼까요? 🌱");
+  const [news, setNews] = useState([]);
+  const [newsLoading, setNewsLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState("news");
 
   useEffect(() => {
     async function fetchStats() {
       try {
         const data = await getTodayStats();
-
         setTodayCount(data.today_count || 0);
         setRecentItem(data.recent_item || "없음");
-
         if ((data.today_count || 0) > 0) {
           setStatsMessage("오늘도 지구를 위한 실천을 이어가고 있어요 🌿");
         } else {
           setStatsMessage("오늘도 분리배출을 시작해볼까요? 🌱");
         }
-      } catch (error) {
-        console.error("통계 불러오기 실패:", error);
-        setTodayCount(0);
-        setRecentItem("없음");
+      } catch {
         setStatsMessage("오늘도 분리배출을 시작해볼까요? 🌱");
       }
     }
-
     fetchStats();
   }, []);
 
-  const handleCameraClick = () => {
-    navigate("/camera");
-  };
-
-  const handleUploadClick = () => {
-    fileInputRef.current?.click();
-  };
+  useEffect(() => {
+    const rssUrl = encodeURIComponent(
+      "https://news.google.com/rss/search?q=분리수거+재활용&hl=ko&gl=KR&ceid=KR:ko"
+    );
+    fetch(`https://api.rss2json.com/v1/api.json?rss_url=${rssUrl}&count=6`)
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.status === "ok") setNews(data.items.slice(0, 6));
+      })
+      .catch(() => {})
+      .finally(() => setNewsLoading(false));
+  }, []);
 
   const handleFileChange = async (e) => {
-  const file = e.target.files?.[0];
-  if (!file) return;
-
-  try {
-    // 미리보기용 localStorage 저장
+    const file = e.target.files?.[0];
+    if (!file) return;
     const reader = new FileReader();
     reader.onload = async () => {
       try {
         localStorage.setItem("uploadedImage", reader.result);
         localStorage.removeItem("capturedImage");
-
-        // 서버 uploads 폴더에 저장
         await uploadImage(file);
-
         navigate("/result");
-      } catch (error) {
-        console.error("이미지 업로드 중 오류 발생:", error);
+      } catch {
         alert("이미지 업로드에 실패했습니다.");
       }
     };
-
     reader.readAsDataURL(file);
-  } catch (error) {
-    console.error("파일 처리 중 오류 발생:", error);
-    alert("파일 처리에 실패했습니다.");
-  }
-};
+  };
 
   return (
     <main>
@@ -85,48 +82,97 @@ export default function Home() {
 
       <section className="stats-section">
         <h3>오늘의 분리배출 현황</h3>
-
         <div className="stats-card">
           <div className="stats-top">
             <div className="stats-item">
               <p className="stats-label">오늘 배출 횟수</p>
-              <p className="stats-value">
-                <span id="todayCount">{todayCount}</span>회
-              </p>
+              <p className="stats-value"><span>{todayCount}</span>회</p>
             </div>
-
             <div className="stats-item">
               <p className="stats-label">최근 배출 품목</p>
-              <p className="stats-value small" id="recentItem">
-                {recentItem}
-              </p>
+              <p className="stats-value small">{recentItem}</p>
             </div>
           </div>
-
-          <p className="stats-message" id="statsMessage">
-            {statsMessage}
-          </p>
+          <p className="stats-message">{statsMessage}</p>
         </div>
       </section>
 
       <div className="buttons">
-        <button type="button" onClick={handleCameraClick}>
-          카메라
-        </button>
-
-        <button type="button" id="uploadBtn" onClick={handleUploadClick}>
-          업로드
-        </button>
-
+        <button type="button" onClick={() => navigate("/camera")}>카메라</button>
+        <button type="button" id="uploadBtn" onClick={() => fileInputRef.current?.click()}>업로드</button>
         <input
           type="file"
-          id="fileInput"
           accept="image/*"
           ref={fileInputRef}
           onChange={handleFileChange}
           style={{ display: "none" }}
         />
       </div>
+
+      {/* 뉴스 / 영상 섹션 */}
+      <section className="media-section">
+        <div className="media-tabs">
+          <button
+            className={activeTab === "news" ? "active" : ""}
+            onClick={() => setActiveTab("news")}
+          >
+            📰 뉴스
+          </button>
+          <button
+            className={activeTab === "youtube" ? "active" : ""}
+            onClick={() => setActiveTab("youtube")}
+          >
+            ▶ 영상
+          </button>
+        </div>
+
+        {activeTab === "news" && (
+          <div className="media-content">
+            {newsLoading ? (
+              <p className="media-loading">뉴스 불러오는 중...</p>
+            ) : news.length > 0 ? (
+              <div className="news-list">
+                {news.map((item, i) => (
+                  <a
+                    key={i}
+                    href={item.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="news-card"
+                  >
+                    <p className="news-headline">{item.title}</p>
+                    <span className="news-meta">
+                      {item.author || "뉴스"} ·{" "}
+                      {new Date(item.pubDate).toLocaleDateString("ko-KR")}
+                    </span>
+                  </a>
+                ))}
+              </div>
+            ) : (
+              <p className="media-empty">뉴스를 불러올 수 없습니다.</p>
+            )}
+          </div>
+        )}
+
+        {activeTab === "youtube" && (
+          <div className="media-content">
+            <div className="youtube-grid">
+              {YOUTUBE_CARDS.map((item, i) => (
+                <a
+                  key={i}
+                  href={`https://www.youtube.com/results?search_query=${encodeURIComponent(item.query)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="youtube-card"
+                >
+                  <span className="youtube-icon">{item.icon}</span>
+                  <span className="youtube-label">{item.label}</span>
+                </a>
+              ))}
+            </div>
+          </div>
+        )}
+      </section>
     </main>
   );
 }
