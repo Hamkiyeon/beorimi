@@ -65,9 +65,24 @@ export default function Home() {
     const reader = new FileReader();
     reader.onload = async () => {
       try {
-        localStorage.setItem("uploadedImage", reader.result);
+        const img = new Image();
+        img.src = reader.result;
+        await new Promise((resolve) => { img.onload = resolve; });
+
+        const canvas = document.createElement("canvas");
+        const maxWidth = 800;
+        const scale = Math.min(1, maxWidth / img.width);
+        canvas.width = img.width * scale;
+        canvas.height = img.height * scale;
+        canvas.getContext("2d").drawImage(img, 0, 0, canvas.width, canvas.height);
+        const compressed = canvas.toDataURL("image/jpeg", 0.7);
+
+        localStorage.setItem("uploadedImage", compressed);
         localStorage.removeItem("capturedImage");
-        await uploadImage(file);
+
+        const blob = await (await fetch(compressed)).blob();
+        const uploadFile = new File([blob], file.name || "image.jpg", { type: "image/jpeg" });
+        await uploadImage(uploadFile);
         navigate("/result");
       } catch {
         alert("이미지 업로드에 실패했습니다.");
