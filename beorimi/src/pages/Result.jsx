@@ -76,10 +76,11 @@ export default function Result() {
       } catch (error) {
         console.error("재업로드 실패:", error);
         alert("이미지 업로드에 실패했습니다.");
+      } finally {
+        e.target.value = "";
       }
     };
     reader.readAsDataURL(file);
-    e.target.value = "";
   };
 
   return (
