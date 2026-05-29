@@ -584,6 +584,25 @@ body:has(.result-page) main {
   margin: 8px 0 0 0;
 }
 
+.btn-guide {
+  display: block;
+  width: 100%;
+  margin-top: 14px;
+  padding: 11px 16px;
+  background: #45a049;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-guide:hover {
+  background: #388e3c;
+}
+
 /* 버튼 3개 행 */
 .result-btns {
   display: flex;

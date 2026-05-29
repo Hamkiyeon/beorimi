@@ -118,6 +118,9 @@ export default function Result() {
           <div className="error-box">
             <p className="error-title">분석 결과를 불러오지 못했습니다.</p>
             <p className="error-sub">잠시 후 다시 시도해 주세요.</p>
+            <button type="button" className="btn-guide" onClick={() => navigate("/guide")}>
+              분리배출 가이드 보기
+            </button>
           </div>
         ) : (
           <div className="result-box">
@@ -171,13 +174,21 @@ export default function Result() {
                 </div>
               ))
             ) : (
-              <p className="empty-text">분석 결과가 없습니다.</p>
+              <div className="empty-text">
+                <p>분석 결과가 없습니다.</p>
+                <button type="button" className="btn-guide" onClick={() => navigate("/guide")}>
+                  분리배출 가이드 보기
+                </button>
+              </div>
             )}
 
             {unknownItems.length > 0 && (
               <div className="unknown-box">
                 <strong>인식 불가 항목:</strong> {unknownItems.join(", ")}
                 <p>해당 항목은 아직 지원되지 않거나 일반쓰레기로 배출해주세요.</p>
+                <button type="button" className="btn-guide" onClick={() => navigate("/guide")}>
+                  분리배출 가이드 보기
+                </button>
               </div>
             )}
           </div>
