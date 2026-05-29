@@ -176,9 +176,6 @@ export default function Result() {
             ) : (
               <div className="empty-text">
                 <p>분석 결과가 없습니다.</p>
-                <button type="button" className="btn-guide" onClick={() => navigate("/guide")}>
-                  분리배출 가이드 보기
-                </button>
               </div>
             )}
 
@@ -186,11 +183,12 @@ export default function Result() {
               <div className="unknown-box">
                 <strong>인식 불가 항목:</strong> {unknownItems.join(", ")}
                 <p>해당 항목은 아직 지원되지 않거나 일반쓰레기로 배출해주세요.</p>
-                <button type="button" className="btn-guide" onClick={() => navigate("/guide")}>
-                  분리배출 가이드 보기
-                </button>
               </div>
             )}
+
+            <button type="button" className="btn-guide" onClick={() => navigate("/guide")}>
+              분리배출 가이드 보기
+            </button>
           </div>
         )}
 
